@@ -33,33 +33,33 @@ A distributed engineering productivity platform that mines GitHub repositories v
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│  MILESTONE 1 — "DevScope Core" (Weeks 1–4)                                 │
-│  Demo-ready. Resume-valid. Production-grade architecture.                   │
+│  MILESTONE 1 — "DevScope Core" (Weeks 1–4)                                   │
+│  Demo-ready. Resume-valid. Production-grade architecture.                    │
 │                                                                              │
-│  GitHub OAuth ──► FastAPI + JWT ──► PostgreSQL (app data)                   │
+│  GitHub OAuth ──► FastAPI + JWT ──► PostgreSQL (app data)                    │
 │        │                               │                                     │
-│        └──► Celery Workers ──► BigQuery (analytics)                         │
+│        └──► Celery Workers ──► BigQuery (analytics)                          │
 │                                   │                                          │
-│                            Metrics SQL ──► React Dashboard                  │
+│                            Metrics SQL ──► React Dashboard                   │
 │                                   │                                          │
-│                            Z-Score Anomalies ──► Alert Feed                 │
+│                            Z-Score Anomalies ──► Alert Feed                  │
 │                                                                              │
-│  + Redis caching, connection pooling, API pagination, error tracking,       │
-│    CI/CD, Docker, Cloud Run, accessibility, correlation IDs                 │
+│  + Redis caching, connection pooling, API pagination, error tracking,        │
+│    CI/CD, Docker, Cloud Run, accessibility, correlation IDs                  │
 │                                                                              │
-│  Week 1: Foundation (scaffolding, GCP, Postgres, BigQuery, GitHub client)   │
-│  Week 2: Backend (FastAPI, auth, Redis, Celery, ingestion pipeline)         │
-│  Week 3: Metrics + Dashboard (computation, charts, anomalies, repo detail)  │
-│  Week 4: Deploy + Polish (Docker, Cloud Run, CI/CD, docs, accessibility)    │
+│  Week 1: Foundation (scaffolding, GCP, Postgres, BigQuery, GitHub client)    │
+│  Week 2: Backend (FastAPI, auth, Redis, Celery, ingestion pipeline)          │
+│  Week 3: Metrics + Dashboard (computation, charts, anomalies, repo detail)   │
+│  Week 4: Deploy + Polish (Docker, Cloud Run, CI/CD, docs, accessibility)     │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│  MILESTONE 2 — "DevScope Advanced" (Weeks 5–6)                             │
-│  Cloud-native upgrade on top of a working system.                           │
+│  MILESTONE 2 — "DevScope Advanced" (Weeks 5–6)                               │
+│  Cloud-native upgrade on top of a working system.                            │
 │                                                                              │
-│  GitHub Webhooks ──► Pub/Sub ──► Dataflow ──► BigQuery                     │
-│                                   Vertex AI anomaly detection               │
+│  GitHub Webhooks ──► Pub/Sub ──► Dataflow ──► BigQuery                       │
+│                                   Vertex AI anomaly detection                │
 │                                                                              │
-│  Week 5: Real-Time Pipeline (Pub/Sub + Webhooks + Dataflow)                │
-│  Week 6: ML Anomaly Detection (Vertex AI) + Final Polish                   │
+│  Week 5: Real-Time Pipeline (Pub/Sub + Webhooks + Dataflow)                  │
+│  Week 6: ML Anomaly Detection (Vertex AI) + Final Polish                     │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -345,6 +345,7 @@ devscope/
 ## 4. COMPLETE FEATURE LIST
 
 ### 4.1 — Authentication & Authorization
+
 - [ ] GitHub OAuth2 login flow (register OAuth app, handle callback)
 - [ ] JWT access tokens (15-min expiry) + refresh tokens (7-day, stored in Postgres)
 - [ ] `ProtectedRoute` component — redirects unauthenticated users to login

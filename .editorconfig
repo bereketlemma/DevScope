@@ -1,0 +1,8 @@
+[core]
+excludesFile = .gitignore_global
+
+[pre-commit]
+enabled = true
+
+[EditorConfig]
+enabled = true
