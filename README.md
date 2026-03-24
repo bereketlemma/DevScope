@@ -4,40 +4,7 @@ A distributed engineering analytics platform that mines GitHub repository data v
 
 ## Architecture
 
-```
-GitHub API
-    │
-    ▼
-┌─────────────────────┐     ┌──────────────────────┐     ┌───────────────┐
-│  Ingestion Service   │────▶│  Google Cloud Pub/Sub │────▶│  Cloud        │
-│  (Cloud Run)         │     │  (Event Streaming)    │     │  Dataflow     │
-│                      │     └──────────────────────┘     │  (Apache Beam)│
-│  • Fetches PRs,      │                                   │               │
-│    commits, reviews  │                                   │  • Transforms │
-│  • Publishes events  │                                   │  • Validates  │
-└─────────────────────┘                                   │  • Aggregates │
-                                                           └───────┬───────┘
-                                                                   │
-                                                                   ▼
-┌─────────────────────┐     ┌──────────────────────┐     ┌───────────────┐
-│  React/TypeScript    │◀────│  API Service          │◀────│  BigQuery     │
-│  Dashboard           │     │  (Cloud Run)          │     │  (Analytics)  │
-│                      │     │                       │     │               │
-│  • PR Latency Charts │     │  • Queries BigQuery   │     │  • PRs        │
-│  • Code Churn        │     │  • Serves metrics     │     │  • Commits    │
-│  • Review Cycles     │     │  • Anomaly results    │     │  • Reviews    │
-│  • Health Score      │     └──────────┬────────────┘     │  • Metrics    │
-│  • Anomaly Feed      │               │                   └───────────────┘
-└─────────────────────┘               │
-                              ┌───────▼───────────┐
-                              │  Vertex AI         │
-                              │  (Cloud Run)       │
-                              │                    │
-                              │  • Time-series     │
-                              │    anomaly detect  │
-                              │  • 95% precision   │
-                              └────────────────────┘
-```
+![DevScope Architecture](docs/devscope-architecture.png)
 
 ## Tech Stack
 
