@@ -1,72 +1,87 @@
-.PHONY: install dev format lint type-check test build up down logs
+.PHONY: dev test lint setup seed deploy
 
-install:
-	cd backend && pip install -e ".[dev]"
-	cd frontend && npm install
+# ─── Setup ─────────────────────────────────────────
+setup:
+	cd ingestion && pip install -r requirements.txt
+	cd pipeline && pip install -r requirements.txt
+	cd api && pip install -r requirements.txt
+	cd ml && pip install -r requirements.txt
+	cd frontend && npm ci
+
+# ─── GCP Infrastructure ───────────────────────────
+infra-setup:
+	chmod +x infra/setup_gcp.sh
+	./infra/setup_gcp.sh
+
+# ─── Development ───────────────────────────────────
+dev-api:
+	cd api && uvicorn main:app --reload --port 8000
+
+dev-ingestion:
+	cd ingestion && uvicorn main:app --reload --port 8001
+
+dev-frontend:
+	cd frontend && npm run dev
 
 dev:
-	docker-compose up -d
+	make -j3 dev-api dev-ingestion dev-frontend
 
-format:
-	cd backend && make format
-	cd frontend && npm run format
+# ─── Pipeline (local) ─────────────────────────────
+pipeline-local:
+	cd pipeline && python main.py --runner DirectRunner
 
-lint:
-	cd backend && make lint
-	cd frontend && npm run lint
+pipeline-dataflow:
+	cd pipeline && python main.py \
+		--runner DataflowRunner \
+		--project $(GCP_PROJECT_ID) \
+		--region $(GCP_REGION) \
+		--temp_location gs://$(GCP_PROJECT_ID)-dataflow-temp/tmp
 
-type-check:
-	cd backend && make type-check
-	cd frontend && npm run type-check
+# ─── Testing ───────────────────────────────────────
+test-ingestion:
+	cd tests && pytest ingestion/ -v
+
+test-pipeline:
+	cd tests && pytest pipeline/ -v
+
+test-api:
+	cd tests && pytest api/ -v
+
+test-ml:
+	cd tests && pytest ml/ -v
+
+test-frontend:
+	cd frontend && npm run test
 
 test:
-	cd backend && make test
+	make test-ingestion test-pipeline test-api test-ml
 
-build:
-	docker-compose build
+# ─── Quality ───────────────────────────────────────
+lint:
+	ruff check ingestion/ api/ pipeline/ ml/
+	cd frontend && npm run lint
 
-up:
-	docker-compose up -d
+format:
+	ruff format ingestion/ api/ pipeline/ ml/
+	cd frontend && npx prettier --write src/
 
-down:
-	docker-compose down
+# ─── Data ──────────────────────────────────────────
+seed:
+	python scripts/seed_bigquery.py
 
-logs:
-	docker-compose logs -f
+# ─── Docker ────────────────────────────────────────
+build-ingestion:
+	docker build -t devscope-ingestion ./ingestion
 
-logs-backend:
-	docker-compose logs -f backend
+build-api:
+	docker build -t devscope-api ./api
 
-logs-frontend:
-	docker-compose logs -f frontend
+build-pipeline:
+	docker build -t devscope-pipeline ./pipeline
 
-logs-celery:
-	docker-compose logs -f celery
+build: build-ingestion build-api build-pipeline
 
-db-migrate:
-	docker-compose exec backend alembic upgrade head
-
-db-downgrade:
-	docker-compose exec backend alembic downgrade -1
-
-clean:
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find . -name "*.pyc" -delete
-	find . -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	rm -rf backend/dist backend/build backend/*.egg-info
-	rm -rf .ruff_cache .mypy_cache
-
-help:
-	@echo "DevScope Development Commands"
-	@echo "=============================="
-	@echo "make install       - Install dependencies"
-	@echo "make dev           - Start development environment"
-	@echo "make up            - Start Docker Compose"
-	@echo "make down          - Stop Docker Compose"
-	@echo "make logs          - View live logs"
-	@echo "make format        - Format code"
-	@echo "make lint          - Run linters"
-	@echo "make type-check    - Type checking"
-	@echo "make test          - Run tests"
-	@echo "make build         - Build Docker images"
-	@echo "make clean         - Clean build artifacts"
+# ─── Deploy ────────────────────────────────────────
+deploy:
+	chmod +x scripts/deploy.sh
+	./scripts/deploy.sh

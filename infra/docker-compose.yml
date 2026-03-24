@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  # ─── GCP Emulators ───────────────────────────────
+  pubsub-emulator:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
+    command: >
+      gcloud beta emulators pubsub start
+      --host-port=0.0.0.0:8085
+      --project=devscope-local
+    ports:
+      - "8085:8085"
+    environment:
+      - PUBSUB_PROJECT_ID=devscope-local
+
+  # ─── Ingestion Service ──────────────────────────
+  ingestion:
+    build: ./ingestion
+    ports:
+      - "8001:8001"
+    env_file: .env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pubsub-emulator:8085
+      - GCP_PROJECT_ID=devscope-local
+    depends_on:
+      - pubsub-emulator
+
+  # ─── API Service ────────────────────────────────
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - GCP_PROJECT_ID=devscope-local
+
+  # ─── Frontend ───────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api

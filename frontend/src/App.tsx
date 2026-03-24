@@ -1,22 +1,24 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Layout from './components/Layout'
-import Dashboard from './pages/Dashboard'
-import RepositoryDetail from './pages/RepositoryDetail'
-import LoginPage from './pages/LoginPage'
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import DashboardLayout from './components/layout/DashboardLayout';
+import LoadingSpinner from './components/common/LoadingSpinner';
 
-function App() {
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const RepoDetail = lazy(() => import('./pages/RepoDetail'));
+const Anomalies = lazy(() => import('./pages/Anomalies'));
+
+export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route element={<Layout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/repos/:id" element={<RepositoryDetail />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route element={<DashboardLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/repo/:repoId" element={<RepoDetail />} />
+            <Route path="/anomalies" element={<Anomalies />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
-  )
+  );
 }
-
-export default App

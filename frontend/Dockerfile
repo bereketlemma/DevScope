@@ -1,23 +1,12 @@
-FROM node:20-alpine
+FROM node:20-slim AS build
 
 WORKDIR /app
-
-# Copy package files
-COPY package*.json .
-
-# Install dependencies
+COPY package.json package-lock.json ./
 RUN npm ci
-
-# Copy source code
 COPY . .
-
-# Build
 RUN npm run build
 
-# Expose port
-EXPOSE 3000
-
-# Serve with a simple HTTP server
-RUN npm install -g serve
-
-CMD ["serve", "-s", "dist", "-l", "3000"]
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 5173
+CMD ["nginx", "-g", "daemon off;"]
