@@ -9,7 +9,7 @@ class Config:
     gcp_project_id: str = os.getenv("GCP_PROJECT_ID", "")
     bq_dataset: str = os.getenv("BQ_DATASET", "devscope_dev")
     bq_location: str = os.getenv("BQ_LOCATION", "US")
-    frontend_url: str = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    frontend_url: str = os.getenv("FRONTEND_URL", "*")
     environment: str = os.getenv("ENVIRONMENT", "development")
     port: int = int(os.getenv("API_PORT", "8000"))
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
