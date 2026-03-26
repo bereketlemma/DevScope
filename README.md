@@ -29,7 +29,7 @@ Streams events through Google Cloud Pub/Sub into BigQuery for sub-second queryin
 
 ## Architecture
 
-![alt text](image-1.png)
+![alt text](docs/devscope-architecture.png)
 
 ## Tech Stack
 
