@@ -74,7 +74,8 @@ def run(argv: list[str] | None = None) -> None:
         (
             routed.pull_requests
             | "TransformPRs" >> beam.ParDo(TransformPullRequest())
-            | "WritePRs" >> beam.io.WriteToBigQuery(
+            | "WritePRs"
+            >> beam.io.WriteToBigQuery(
                 table=build_table_ref("pull_requests"),
                 schema={"fields": PULL_REQUESTS_SCHEMA},
                 write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
@@ -86,7 +87,8 @@ def run(argv: list[str] | None = None) -> None:
         (
             routed.commits
             | "TransformCommits" >> beam.ParDo(TransformCommit())
-            | "WriteCommits" >> beam.io.WriteToBigQuery(
+            | "WriteCommits"
+            >> beam.io.WriteToBigQuery(
                 table=build_table_ref("commits"),
                 schema={"fields": COMMITS_SCHEMA},
                 write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
@@ -98,7 +100,8 @@ def run(argv: list[str] | None = None) -> None:
         (
             routed.reviews
             | "TransformReviews" >> beam.ParDo(TransformReview())
-            | "WriteReviews" >> beam.io.WriteToBigQuery(
+            | "WriteReviews"
+            >> beam.io.WriteToBigQuery(
                 table=build_table_ref("reviews"),
                 schema={"fields": REVIEWS_SCHEMA},
                 write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,

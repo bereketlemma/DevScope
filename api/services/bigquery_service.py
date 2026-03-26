@@ -39,7 +39,7 @@ class BigQueryService:
         """Get distinct repositories from ingested data."""
         sql = f"""
             SELECT DISTINCT repo_id, COUNT(*) as pr_count
-            FROM {self._table('pull_requests')}
+            FROM {self._table("pull_requests")}
             GROUP BY repo_id
             ORDER BY pr_count DESC
         """
@@ -59,7 +59,7 @@ class BigQueryService:
                     TIMESTAMP_DIFF(merged_at, created_at, HOUR), 100
                 )[OFFSET(95)] AS p95_hours_to_merge,
                 COUNT(*) AS pr_count
-            FROM {self._table('pull_requests')}
+            FROM {self._table("pull_requests")}
             WHERE repo_id = @repo_id
               AND merged_at IS NOT NULL
               AND created_date >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)
@@ -83,7 +83,7 @@ class BigQueryService:
                 SUM(deletions) AS total_deletions,
                 SUM(additions) - SUM(deletions) AS net_churn,
                 COUNT(*) AS commit_count
-            FROM {self._table('commits')}
+            FROM {self._table("commits")}
             WHERE repo_id = @repo_id
               AND committed_date >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)
             GROUP BY committed_date
@@ -108,8 +108,8 @@ class BigQueryService:
                 TIMESTAMP_DIFF(
                     MIN(r.submitted_at), pr.created_at, HOUR
                 ) AS hours_to_first_review
-            FROM {self._table('pull_requests')} pr
-            LEFT JOIN {self._table('reviews')} r
+            FROM {self._table("pull_requests")} pr
+            LEFT JOIN {self._table("reviews")} r
               ON pr.pr_id = r.pr_id AND pr.repo_id = r.repo_id
             WHERE pr.repo_id = @repo_id
               AND pr.created_date >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)
@@ -128,7 +128,7 @@ class BigQueryService:
         """Fetch aggregated daily metrics."""
         sql = f"""
             SELECT metric_date, metric_value, developer
-            FROM {self._table('daily_metrics')}
+            FROM {self._table("daily_metrics")}
             WHERE repo_id = @repo_id
               AND metric_name = @metric_name
               AND metric_date >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)

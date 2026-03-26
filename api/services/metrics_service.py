@@ -28,7 +28,9 @@ class MetricsService:
         # Latency score: lower is better (target < 24h median)
         latency_score = 100.0
         if latency:
-            avg_median = sum(r.get("median_hours_to_merge", 0) or 0 for r in latency) / len(latency)
+            avg_median = sum(
+                r.get("median_hours_to_merge", 0) or 0 for r in latency
+            ) / len(latency)
             latency_score = max(0, min(100, 100 - (avg_median - 24) * 2))
 
         # Churn score: stability (low variance is better)
@@ -37,7 +39,7 @@ class MetricsService:
             values = [r.get("net_churn", 0) or 0 for r in churn]
             mean_churn = sum(values) / len(values)
             variance = sum((v - mean_churn) ** 2 for v in values) / len(values)
-            std_dev = variance ** 0.5
+            std_dev = variance**0.5
             churn_score = max(0, min(100, 100 - std_dev / 10))
 
         # Review score: higher review coverage is better

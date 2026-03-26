@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from typing import Any
 
 import httpx
@@ -86,7 +86,11 @@ class GitHubClient:
         self, owner: str, name: str, since: datetime | None = None
     ) -> list[dict[str, Any]]:
         """Fetch pull requests, optionally filtered by date."""
-        params: dict[str, Any] = {"state": "all", "sort": "updated", "direction": "desc"}
+        params: dict[str, Any] = {
+            "state": "all",
+            "sort": "updated",
+            "direction": "desc",
+        }
         if since:
             params["since"] = since.isoformat()
         return await self._get_paginated(f"/repos/{owner}/{name}/pulls", params)

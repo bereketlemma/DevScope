@@ -16,10 +16,16 @@ from preprocessing import fetch_training_data, build_features
 logger = logging.getLogger(__name__)
 
 FEATURE_COLS = [
-    "lag_1", "lag_7", "lag_14",
-    "rolling_mean_7", "rolling_mean_14",
-    "rolling_std_7", "rolling_std_14",
-    "z_score_14", "trend_7", "day_of_week",
+    "lag_1",
+    "lag_7",
+    "lag_14",
+    "rolling_mean_7",
+    "rolling_mean_14",
+    "rolling_std_7",
+    "rolling_std_14",
+    "z_score_14",
+    "trend_7",
+    "day_of_week",
 ]
 
 
@@ -58,21 +64,29 @@ def predict_anomalies(
     anomalies = []
     for i, (pred, row) in enumerate(zip(response.predictions, recent.itertuples())):
         # Isolation Forest returns -1 for anomalies
-        is_anomaly = pred == -1 if isinstance(pred, (int, float)) else pred.get("is_anomaly", False)
+        is_anomaly = (
+            pred == -1
+            if isinstance(pred, (int, float))
+            else pred.get("is_anomaly", False)
+        )
         score = abs(row.z_score_14) / 5.0  # Normalize as confidence proxy
 
         if is_anomaly:
-            anomalies.append({
-                "metric_date": str(row.metric_date),
-                "metric_name": metric_name,
-                "metric_value": row.metric_value,
-                "expected_value": row.rolling_mean_14,
-                "z_score": row.z_score_14,
-                "confidence": min(score, 1.0),
-                "severity": _classify(score),
-            })
+            anomalies.append(
+                {
+                    "metric_date": str(row.metric_date),
+                    "metric_name": metric_name,
+                    "metric_value": row.metric_value,
+                    "expected_value": row.rolling_mean_14,
+                    "z_score": row.z_score_14,
+                    "confidence": min(score, 1.0),
+                    "severity": _classify(score),
+                }
+            )
 
-    logger.info("Predicted %d anomalies for %s/%s", len(anomalies), repo_id, metric_name)
+    logger.info(
+        "Predicted %d anomalies for %s/%s", len(anomalies), repo_id, metric_name
+    )
     return anomalies
 
 
