@@ -17,7 +17,7 @@ class TestTransformPullRequest:
         row = results[0]
         assert row["pr_id"] == "123456"
         assert row["repo_id"] == "owner/repo"
-        assert row["author"] == "bereketlemma"
+        assert row["author"] == "acdlite"
         assert row["additions"] == 250
         assert row["deletions"] == 80
         assert row["created_date"] == "2026-03-01"
@@ -42,7 +42,7 @@ class TestTransformCommit:
         assert len(results) == 1
         row = results[0]
         assert row["commit_sha"] == "abc123def456"
-        assert row["author"] == "bereketlemma"
+        assert row["author"] == "acdlite"
         assert row["additions"] == 100
         assert row["committed_date"] == "2026-03-01"
 

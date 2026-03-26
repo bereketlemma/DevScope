@@ -10,7 +10,7 @@ def sample_pr_payload():
         "id": 123456,
         "number": 42,
         "title": "feat: add user auth",
-        "user": {"login": "bereketlemma"},
+        "user": {"login": "acdlite"},
         "state": "closed",
         "created_at": "2026-03-01T10:00:00Z",
         "merged_at": "2026-03-02T14:30:00Z",
@@ -26,7 +26,7 @@ def sample_commit_payload():
     """Sample GitHub commit payload."""
     return {
         "sha": "abc123def456",
-        "author": {"login": "bereketlemma"},
+        "author": {"login": "acdlite"},
         "commit": {
             "message": "feat: add login endpoint",
             "committer": {"date": "2026-03-01T12:00:00Z"},
