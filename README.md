@@ -14,6 +14,19 @@ Streams events through Google Cloud Pub/Sub into BigQuery for sub-second queryin
 
 ![DevScope Dashboard](docs/dashboard-screenshot.png)
 
+<details>
+<summary>More screenshots</summary>
+
+### Dashboard Overview
+
+![Dashboard Overview](docs/dashboard-overview.png)
+
+### Anomaly Feed
+
+![Anomaly Feed](docs/anomaly-feed.png)
+
+</details>
+
 ## Architecture
 
 ![DevScope Architecture](docs/devscope-architecture.png)
