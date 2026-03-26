@@ -6,7 +6,6 @@ import logging
 from typing import Any
 
 from google.cloud import aiplatform
-from google.cloud import bigquery
 
 from config import config
 from services.bigquery_service import BigQueryService
@@ -41,12 +40,12 @@ class AnomalyService:
             return await self._detect_vertex(repo_id, days)
         return await self._detect_zscore(repo_id, days)
 
-    async def _detect_vertex(
-        self, repo_id: str, days: int
-    ) -> list[dict[str, Any]]:
+    async def _detect_vertex(self, repo_id: str, days: int) -> list[dict[str, Any]]:
         """Vertex AI time-series anomaly detection."""
         # Fetch recent daily metrics for all metric types
-        metrics = await self._bq.get_daily_metrics(repo_id, "pr_merge_latency_median", days)
+        metrics = await self._bq.get_daily_metrics(
+            repo_id, "pr_merge_latency_median", days
+        )
         if not metrics:
             return []
 
@@ -67,16 +66,18 @@ class AnomalyService:
                 confidence = pred.get("confidence", 0.0)
 
                 if is_anomaly and confidence >= 0.8:
-                    anomalies.append({
-                        "repo_id": repo_id,
-                        "metric_date": instances[i]["metric_date"],
-                        "metric_name": "pr_merge_latency_median",
-                        "metric_value": instances[i]["metric_value"],
-                        "expected_value": pred.get("expected_value"),
-                        "confidence": confidence,
-                        "severity": self._classify_severity(confidence),
-                        "anomaly_type": "latency_spike",
-                    })
+                    anomalies.append(
+                        {
+                            "repo_id": repo_id,
+                            "metric_date": instances[i]["metric_date"],
+                            "metric_name": "pr_merge_latency_median",
+                            "metric_value": instances[i]["metric_value"],
+                            "expected_value": pred.get("expected_value"),
+                            "confidence": confidence,
+                            "severity": self._classify_severity(confidence),
+                            "anomaly_type": "latency_spike",
+                        }
+                    )
 
             return anomalies
 
@@ -84,9 +85,7 @@ class AnomalyService:
             logger.error("Vertex AI prediction failed, falling back to z-score: %s", e)
             return await self._detect_zscore(repo_id, days)
 
-    async def _detect_zscore(
-        self, repo_id: str, days: int
-    ) -> list[dict[str, Any]]:
+    async def _detect_zscore(self, repo_id: str, days: int) -> list[dict[str, Any]]:
         """
         Statistical z-score anomaly detection.
 
@@ -114,7 +113,7 @@ class AnomalyService:
                 window = values[i - 14 : i]
                 mean = sum(window) / len(window)
                 variance = sum((v - mean) ** 2 for v in window) / len(window)
-                std = variance ** 0.5
+                std = variance**0.5
 
                 if std == 0:
                     continue
@@ -123,17 +122,19 @@ class AnomalyService:
 
                 if z_score > 2.0:
                     severity = self._classify_severity_zscore(z_score)
-                    all_anomalies.append({
-                        "repo_id": repo_id,
-                        "metric_date": str(metrics[i]["metric_date"]),
-                        "metric_name": metric_name,
-                        "metric_value": values[i],
-                        "expected_value": round(mean, 2),
-                        "z_score": round(z_score, 2),
-                        "confidence": min(z_score / 5.0, 1.0),
-                        "severity": severity,
-                        "anomaly_type": anomaly_type,
-                    })
+                    all_anomalies.append(
+                        {
+                            "repo_id": repo_id,
+                            "metric_date": str(metrics[i]["metric_date"]),
+                            "metric_name": metric_name,
+                            "metric_value": values[i],
+                            "expected_value": round(mean, 2),
+                            "z_score": round(z_score, 2),
+                            "confidence": min(z_score / 5.0, 1.0),
+                            "severity": severity,
+                            "anomaly_type": anomaly_type,
+                        }
+                    )
 
         return sorted(all_anomalies, key=lambda a: a["metric_date"], reverse=True)
 

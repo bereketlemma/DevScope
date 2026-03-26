@@ -32,20 +32,29 @@ class RoutByEventType(beam.DoFn):
         repo_id = element.get("repo_id", "")
 
         if event_type == "pull_request":
-            yield beam.pvalue.TaggedOutput("pull_requests", {
-                "raw": payload,
-                "repo_id": repo_id,
-            })
+            yield beam.pvalue.TaggedOutput(
+                "pull_requests",
+                {
+                    "raw": payload,
+                    "repo_id": repo_id,
+                },
+            )
         elif event_type == "commit":
-            yield beam.pvalue.TaggedOutput("commits", {
-                "raw": payload,
-                "repo_id": repo_id,
-            })
+            yield beam.pvalue.TaggedOutput(
+                "commits",
+                {
+                    "raw": payload,
+                    "repo_id": repo_id,
+                },
+            )
         elif event_type == "review":
-            yield beam.pvalue.TaggedOutput("reviews", {
-                "raw": payload,
-                "repo_id": repo_id,
-            })
+            yield beam.pvalue.TaggedOutput(
+                "reviews",
+                {
+                    "raw": payload,
+                    "repo_id": repo_id,
+                },
+            )
         else:
             logger.warning("Unknown event type: %s", event_type)
 
@@ -108,7 +117,9 @@ class TransformCommit(beam.DoFn):
         yield {
             "commit_sha": raw.get("sha", ""),
             "repo_id": repo_id,
-            "author": raw.get("author", {}).get("login", "") if raw.get("author") else "",
+            "author": raw.get("author", {}).get("login", "")
+            if raw.get("author")
+            else "",
             "message": commit_data.get("message", ""),
             "committed_at": committed_at,
             "additions": raw.get("stats", {}).get("additions", 0),

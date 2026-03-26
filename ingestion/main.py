@@ -19,7 +19,6 @@ import json
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
-from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from pydantic import BaseModel
@@ -64,7 +63,9 @@ class HealthResponse(BaseModel):
 
 
 # ─── Ingestion Logic ──────────────────────────────
-async def _ingest_repo(owner: str, repo: str, since: datetime | None = None) -> dict[str, int]:
+async def _ingest_repo(
+    owner: str, repo: str, since: datetime | None = None
+) -> dict[str, int]:
     """Fetch GitHub data and publish events to Pub/Sub."""
     repo_id = f"{owner}/{repo}"
     counts = {"pull_requests": 0, "commits": 0, "reviews": 0}
@@ -125,11 +126,14 @@ async def github_webhook(request: Request, background_tasks: BackgroundTasks):
     body = await request.body()
 
     if config.github_webhook_secret:
-        expected = "sha256=" + hmac.new(
-            config.github_webhook_secret.encode(),
-            body,
-            hashlib.sha256,
-        ).hexdigest()
+        expected = (
+            "sha256="
+            + hmac.new(
+                config.github_webhook_secret.encode(),
+                body,
+                hashlib.sha256,
+            ).hexdigest()
+        )
         if not hmac.compare_digest(signature, expected):
             raise HTTPException(status_code=401, detail="Invalid signature")
 

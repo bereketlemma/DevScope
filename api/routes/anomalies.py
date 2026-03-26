@@ -36,6 +36,8 @@ async def get_anomalies(
             "repo_id": repo_id,
             "window_days": days,
             "total": len(anomalies),
-            "detection_method": "vertex_ai" if anomaly_svc._vertex_enabled else "z_score",
+            "detection_method": "vertex_ai"
+            if anomaly_svc._vertex_enabled
+            else "z_score",
         },
     }

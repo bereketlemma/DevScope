@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import pickle
 from pathlib import Path
 
@@ -26,10 +25,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 FEATURE_COLS = [
-    "lag_1", "lag_7", "lag_14",
-    "rolling_mean_7", "rolling_mean_14",
-    "rolling_std_7", "rolling_std_14",
-    "z_score_14", "trend_7", "day_of_week",
+    "lag_1",
+    "lag_7",
+    "lag_14",
+    "rolling_mean_7",
+    "rolling_mean_14",
+    "rolling_std_7",
+    "rolling_std_14",
+    "z_score_14",
+    "trend_7",
+    "day_of_week",
 ]
 
 METRIC_TYPES = [
@@ -60,7 +65,9 @@ def train_model(
         raw_df = fetch_training_data(project_id, dataset, repo_id, metric_name)
 
         if len(raw_df) < 30:
-            logger.warning("Insufficient data for %s (%d rows), skipping", metric_name, len(raw_df))
+            logger.warning(
+                "Insufficient data for %s (%d rows), skipping", metric_name, len(raw_df)
+            )
             continue
 
         features_df = build_features(raw_df)
@@ -71,6 +78,7 @@ def train_model(
         raise ValueError(f"No sufficient training data for {repo_id}")
 
     import pandas as pd
+
     combined = pd.concat(all_features, ignore_index=True)
     X = combined[FEATURE_COLS].values
 
@@ -92,7 +100,9 @@ def train_model(
     anomaly_count = (predictions == -1).sum()
     logger.info(
         "Training complete: %d anomalies detected in %d samples (%.1f%%)",
-        anomaly_count, len(X_scaled), anomaly_count / len(X_scaled) * 100,
+        anomaly_count,
+        len(X_scaled),
+        anomaly_count / len(X_scaled) * 100,
     )
 
     # Save model artifacts locally
