@@ -1,7 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply antialiased text-gray-900 dark:text-gray-100;
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    @apply antialiased font-sans bg-surface-950 text-gray-100;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-surface-900/80 backdrop-blur-sm border border-white/[0.06] rounded-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-brand-500/30 hover:shadow-glow;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-brand-gradient;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-white tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-gray-400 mt-1;
+  }
+
+  .page-header {
+    @apply mb-8;
+  }
+
+  .input-field {
+    @apply rounded-lg border border-white/10 bg-surface-900 px-3.5 py-2 text-sm text-gray-200
+           placeholder-gray-500 transition-colors
+           focus:border-brand-500/50 focus:outline-none focus:ring-1 focus:ring-brand-500/30;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-critical {
+    @apply badge bg-red-500/15 text-red-400 ring-1 ring-red-500/20;
+  }
+
+  .badge-high {
+    @apply badge bg-orange-500/15 text-orange-400 ring-1 ring-orange-500/20;
+  }
+
+  .badge-medium {
+    @apply badge bg-yellow-500/15 text-yellow-400 ring-1 ring-yellow-500/20;
+  }
 }
