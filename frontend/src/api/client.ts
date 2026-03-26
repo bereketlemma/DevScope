@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const client = axios.create({
-  baseURL: 'https://devscope-api-965448962417.us-central1.run.app/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://devscope-api-965448962417.us-central1.run.app/api/v1',
   timeout: 15_000,
   headers: { 'Content-Type': 'application/json' },
 });
